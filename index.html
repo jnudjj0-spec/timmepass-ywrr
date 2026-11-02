@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prarthana's Retro Arcade</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Press Start 2P Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen text-center p-4">
+
+    <!-- Audio Player (Lofi track from Pixabay) -->
+    <div class="fixed top-4 right-4 z-50 bg-gray-800 p-2 border-2 border-white text-xs flex flex-col items-center">
+        <span>BGM</span>
+        <audio id="bgm" loop class="mt-2 w-48 h-8 rounded-none">
+            <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <!-- Main Container -->
+    <div id="app-container" class="w-full max-w-4xl h-[600px] relative">
+        
+        <!-- Screen 1: Main Menu -->
+        <div id="screen-menu" class="w-full h-full flex flex-col items-center justify-center game-frame fade-in">
+            <h1 class="text-4xl text-green-400 mb-8 tracking-widest" style="text-shadow: 4px 4px #000;">PRARTHANA'S ARCADE</h1>
+            <p class="text-sm mb-12 max-w-md leading-relaxed text-gray-300">
+                A 12-level retro adventure designed just for you. <br><br>
+                Use your Mouse & Keyboard.<br>
+                Beware: It gets harder as you go!
+            </p>
+            <button onclick="ui.showScreen('screen-level-select')" class="pixel-btn px-8 py-4 text-xl text-yellow-300">START GAME</button>
+            <button onclick="gameSystem.resetProgress()" class="mt-8 text-xs text-red-500 hover:text-red-300 underline">Reset Progress</button>
+        </div>
+
+        <!-- Screen 2: Level Select -->
+        <div id="screen-level-select" class="w-full h-full flex flex-col items-center justify-start game-frame fade-in p-8 hidden">
+            <h2 class="text-2xl text-white mb-8">SELECT LEVEL</h2>
+            <div id="level-grid" class="grid grid-cols-4 gap-6 w-full max-w-2xl">
+                <!-- Buttons injected by JS -->
+            </div>
+            <button onclick="ui.showScreen('screen-menu')" class="mt-auto pixel-btn px-6 py-2 text-sm">BACK</button>
+        </div>
+
+        <!-- Screen 3: Game Area -->
+        <div id="screen-game" class="w-full h-full flex flex-col items-center justify-center game-frame hidden relative">
+            
+            <!-- Game Header Info -->
+            <div class="absolute top-0 left-0 w-full p-4 flex justify-between items-center bg-gray-900 border-b-4 border-gray-600 z-10">
+                <span id="game-title" class="text-yellow-400 text-sm">Level X: Title</span>
+                <span id="game-timer" class="text-red-400 text-sm hidden">Time: 0</span>
+                <span id="game-score" class="text-blue-400 text-sm hidden">Score: 0</span>
+                <button onclick="gameSystem.quitToMenu()" class="pixel-btn px-2 py-1 text-xs">QUIT</button>
+            </div>
+
+            <!-- Context Area for DOM based games -->
+            <div id="dom-game-area" class="w-full h-full mt-16 flex items-center justify-center relative hidden"></div>
+            
+            <!-- Context Area for Canvas based games -->
+            <canvas id="game-canvas" width="800" height="500" class="mt-12 hidden"></canvas>
+
+            <!-- Overlay for Level Start / Results -->
+            <div id="game-overlay" class="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center z-20 hidden">
+                <h3 id="overlay-msg" class="text-3xl mb-6 text-white">READY?</h3>
+                <button id="overlay-btn" class="pixel-btn px-6 py-3 text-lg hidden">CONTINUE</button>
+            </div>
+        </div>
+
+        <!-- Screen 4: The Ending (Level 12 Beaten) -->
+        <div id="screen-ending" class="w-full h-full flex flex-col items-center justify-center game-frame fade-in hidden bg-gray-900 p-8">
+            <h1 class="text-3xl text-pink-400 mb-6">VICTORY!</h1>
+            
+            <!-- CSS Sunflowers -->
+            <div class="flex gap-8 mb-8">
+                <div class="sunflower-grid">
+                    <div class="empty"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="empty"></div>
+                    <div class="petal"></div><div class="petal"></div><div class="center"></div><div class="petal"></div><div class="petal"></div>
+                    <div class="petal"></div><div class="center"></div><div class="center"></div><div class="center"></div><div class="petal"></div>
+                    <div class="petal"></div><div class="petal"></div><div class="center"></div><div class="petal"></div><div class="petal"></div>
+                    <div class="empty"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="empty"></div>
+                    <div class="empty"></div><div class="empty"></div><div class="leaf"></div><div class="empty"></div><div class="empty"></div>
+                    <div class="empty"></div><div class="leaf"></div><div class="leaf"></div><div class="leaf"></div><div class="empty"></div>
+                    <div class="empty"></div><div class="empty"></div><div class="leaf"></div><div class="empty"></div><div class="empty"></div>
+                </div>
+                <div class="sunflower-grid">
+                    <div class="empty"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="empty"></div>
+                    <div class="petal"></div><div class="petal"></div><div class="center"></div><div class="petal"></div><div class="petal"></div>
+                    <div class="petal"></div><div class="center"></div><div class="center"></div><div class="center"></div><div class="petal"></div>
+                    <div class="petal"></div><div class="petal"></div><div class="center"></div><div class="petal"></div><div class="petal"></div>
+                    <div class="empty"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="empty"></div>
+                    <div class="empty"></div><div class="empty"></div><div class="leaf"></div><div class="empty"></div><div class="empty"></div>
+                    <div class="empty"></div><div class="leaf"></div><div class="leaf"></div><div class="leaf"></div><div class="empty"></div>
+                    <div class="empty"></div><div class="empty"></div><div class="leaf"></div><div class="empty"></div><div class="empty"></div>
+                </div>
+            </div>
+
+            <p class="text-sm leading-8 text-white max-w-xl text-center">
+                You survived the adventure, <span class="text-yellow-300 font-bold">Prarthana</span>! <br><br>
+                Just like you conquer everything else in life, you beat all 12 levels. <br>
+                You're my favorite Player 1. <span class="heart inline-block ml-2">❤</span>
+            </p>
+
+            <div class="mt-6 bg-gray-800 p-4 border-2 border-white flex flex-col items-center max-w-md">
+                <p class="text-[10px] leading-relaxed text-gray-300 mb-3 text-center uppercase">copy this and paste that word in shivamm's chatbox so we will know that you have reached here...</p>
+                <div class="text-lg text-cyan-300 mb-4 tracking-widest">&lt; THE MORNING MOON &gt;</div>
+                <button onclick="copySecretCode(this)" class="pixel-btn px-4 py-2 text-xs text-white">COPY CODE</button>
+            </div>
+
+            <button onclick="ui.showScreen('screen-menu')" class="mt-8 pixel-btn px-6 py-2 text-xs">Return to Menu</button>
+        </div>
+
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
